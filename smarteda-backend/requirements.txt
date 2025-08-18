@@ -13,3 +13,14 @@ python-jose[cryptography]==3.3.0
 passlib[bcrypt]==1.7.4
 python-dotenv==1.0.0
 pydantic-settings==2.6.1
+
+# Message Queue Dependencies
+celery==5.3.4
+redis==5.0.1
+kombu==5.3.4
+
+# Vector Database & Embeddings
+faiss-cpu==1.7.4
+sentence-transformers==2.2.2
+numpy==1.24.3
+scikit-learn==1.3.0

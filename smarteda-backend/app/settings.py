@@ -28,6 +28,18 @@ class Settings(BaseSettings):  # type: ignore
     api_prefix: str = "/api/v1"
     mongodb_url: str = "mongodb://localhost:27017"
     database_name: str = "smarteda_db"
+    
+    # Message Queue Settings
+    redis_url: str = "redis://localhost:6379/0"
+    celery_broker_url: str = "redis://localhost:6379/0"
+    celery_result_backend: str = "redis://localhost:6379/0"
+    
+    # Vector Database Configuration
+    vector_db_path: str = "./data/vector_db"
+    embedding_model: str = "all-MiniLM-L6-v2"
+    vector_dimension: int = 384
+    similarity_threshold: float = 0.7
+    
     jwt_secret_key: str = "your-super-secret-key-change-this"
     jwt_algorithm: str = "HS256"
     jwt_access_token_expire_minutes: int = 30
