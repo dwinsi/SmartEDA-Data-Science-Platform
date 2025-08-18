@@ -34,7 +34,7 @@ export function MLSection({ uploadedFile, targetColumn }: { uploadedFile: File |
       formData.append("file", uploadedFile);
       formData.append("target_column", targetColumn);
       formData.append("model", selectedModel);
-      const response = await fetch("http://localhost:8000/ml/", {
+      const response = await fetch("http://localhost:8000/api/v1/ml/", {
         method: "POST",
         body: formData,
       });

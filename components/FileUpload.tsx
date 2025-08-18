@@ -60,7 +60,7 @@ export function FileUpload({
     const formData = new FormData();
     formData.append("file", uploadedFile);
     try {
-      const response = await fetch("http://localhost:8000/upload/", {
+      const response = await fetch("http://localhost:8000/api/v1/files/upload/", {
         method: "POST",
         body: formData,
       });
@@ -81,7 +81,7 @@ export function FileUpload({
     setEdaError(null);
     setEdaResult(null);
     try {
-      const response = await fetch(`http://localhost:8000/eda/?target_column=${encodeURIComponent(selectedTarget)}`);
+      const response = await fetch(`http://localhost:8000/api/v1/eda/eda/?target_column=${encodeURIComponent(selectedTarget)}`);
       if (!response.ok) throw new Error("EDA request failed");
       const data = await response.json();
       setEdaResult(data);

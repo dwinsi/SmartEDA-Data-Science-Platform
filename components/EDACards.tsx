@@ -32,7 +32,7 @@ export function EDACards({ uploadedFile, selectedTarget }: EDACardsProps) {
       const formData = new FormData();
       formData.append("file", uploadedFile);
       formData.append("target_column", selectedTarget);
-      const response = await fetch("http://localhost:8000/eda/full_report/", {
+      const response = await fetch("http://localhost:8000/api/v1/eda/full_report/", {
         method: "POST",
         body: formData,
       });
