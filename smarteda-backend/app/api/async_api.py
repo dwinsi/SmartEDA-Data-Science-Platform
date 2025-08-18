@@ -395,7 +395,7 @@ async def get_vector_db_stats() -> Dict[str, Any]:
 
         return stats
 
-    except Exception as e:
+    except (ValueError, RuntimeError, OSError) as e:
         return {
             "status": "error",
             "message": f"Failed to get vector database stats: {str(e)}",

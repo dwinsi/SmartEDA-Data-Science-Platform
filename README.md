@@ -1,20 +1,50 @@
 # SmartEDA - Data Analytics Platform
 
-A modern data science web application for exploratory data analysis and basic machine learning.
+A modern, enterprise-grade data science web application for exploratory data analysis and machine learning, featuring a FastAPI backend with asynchronous task processing and a React TypeScript frontend.
 
-## Features
+## 🚀 Features
 
-- 🎨 Clean, professional UI with pastel accent colors
+### Frontend Features
+
+- 🎨 Clean, professional UI with modern design system
 - 📊 Drag-and-drop file upload for CSV/XLSX files
-- 📈 EDA summary cards with dataset insights
-- 🧠 Machine learning model selection interface
-- 📱 Fully responsive design
+- 📈 EDA summary cards with comprehensive dataset insights
+- 🧠 Machine learning model selection and training interface
+- 📱 Fully responsive design for all devices
 - ⚡ Built with React, TypeScript, and Tailwind CSS
 - 🔒 Secure file parsing with ExcelJS and PapaParse
 
-## Security
+### Backend Features
 
-This project uses secure alternatives to vulnerable packages:
+- 🚀 High-performance FastAPI REST API
+- 📊 Automated EDA with pandas profiling
+- 🤖 ML pipeline with scikit-learn integration
+- ⚡ Asynchronous task processing with Celery
+- 🔄 Real-time progress tracking
+- 📝 Comprehensive logging and error handling
+- ✅ **PEP8 Compliant** - All code follows Python style guidelines
+
+## 🛠️ Technology Stack
+
+### Frontend
+
+- **React 18** with TypeScript
+- **Vite** for fast development and building
+- **Tailwind CSS** with shadcn/ui components
+- **ExcelJS** and **PapaParse** for secure file processing
+
+### Backend
+
+- **FastAPI** - Modern Python web framework
+- **Celery** - Distributed task processing
+- **Pandas** - Data manipulation and analysis
+- **Scikit-learn** - Machine learning algorithms
+- **MongoDB** with Beanie ODM (optional)
+- **Pydantic** - Data validation and serialization
+
+## 🔒 Security
+
+This project prioritizes security with modern, actively maintained packages:
 
 - **ExcelJS** instead of SheetJS/xlsx - Actively maintained with better security practices
 - **PapaParse** for CSV parsing - Fast, secure, and reliable
@@ -23,10 +53,36 @@ This project uses secure alternatives to vulnerable packages:
 ### Why we replaced xlsx
 
 The original `xlsx` package had critical security vulnerabilities:
+
 - **CVE-2023-30533**: Prototype Pollution vulnerability
 - **CVE-2023-30534**: Regular Expression Denial of Service (ReDoS)
 
 Our alternatives provide the same functionality without these security risks.
+
+## 📁 Project Structure
+
+```text
+SmartEDA Data Science Platform/
+├── 📁 Frontend (React + TypeScript)
+│   ├── components/          # Reusable UI components
+│   ├── src/                # Application source code
+│   ├── styles/             # Global CSS styles
+│   └── utils/              # Utility functions
+│
+├── 📁 smarteda-backend/    # FastAPI Backend
+│   ├── app/
+│   │   ├── api/            # API endpoints
+│   │   ├── models/         # Pydantic models
+│   │   ├── services/       # Business logic
+│   │   ├── tasks/          # Celery async tasks
+│   │   └── celery_app.py   # Celery configuration
+│   └── requirements.txt    # Python dependencies
+│
+└── 📁 Documentation
+    ├── API_REFERENCE.md    # API documentation
+    ├── DEPLOYMENT_GUIDE.md # Deployment instructions
+    └── USER_GUIDE.md       # User documentation
+```
 
 ## Getting Started
 
@@ -80,10 +136,12 @@ npm run preview
 ## File Format Support
 
 ### Supported Formats
+
 - **CSV files** (.csv) - Parsed with PapaParse
 - **Excel files** (.xlsx, .xls) - Parsed with ExcelJS
 
 ### File Processing Features
+
 - Automatic data type detection (numeric vs categorical)
 - Missing value detection and counting
 - Basic statistical calculations
@@ -92,7 +150,7 @@ npm run preview
 
 ## Project Structure
 
-```
+```text
 ├── App.tsx                 # Main application component
 ├── src/
 │   └── main.tsx           # React entry point
@@ -108,22 +166,26 @@ npm run preview
 ## Libraries Used
 
 ### Core Dependencies
+
 - **React 18** - Modern React with hooks and concurrent features
 - **TypeScript** - Type safety and better developer experience
 - **Tailwind CSS** - Utility-first CSS framework
 - **Vite** - Fast build tool and development server
 
 ### File Processing
+
 - **ExcelJS** - Secure Excel file parsing and manipulation
 - **PapaParse** - Fast and reliable CSV parsing
 - **csv-parse** - Additional CSV processing support
 - **file-saver** - Client-side file saving utilities
 
 ### Data Visualization
+
 - **Recharts** - React charting library built on D3
 - **Lucide React** - Beautiful, customizable icons
 
 ### Development Tools
+
 - **ESLint** - Code linting and formatting
 - **PostCSS** - CSS processing with Autoprefixer
 

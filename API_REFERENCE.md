@@ -1,13 +1,42 @@
 # API Reference Guide
 
-## SmartEDA Platform API v1.0
+## SmartEDA Platform API v1.2 - Updated August 2025
+
+### 🚀 Latest Updates
+
+#### Code Quality Improvements
+
+- **PEP8 Compliance**: All backend code now follows Python style guidelines
+- **Performance Optimizations**: Improved import organization and task processing
+- **Enhanced Error Handling**: Better exception management across all endpoints
+- **Async Task Processing**: Upgraded Celery task implementation
 
 ### Base Information
 
 - **Base URL**: `http://localhost:8000/api/v1`
-- **Authentication**: None (planned for future versions)
+- **API Documentation**: `http://localhost:8000/docs` (Swagger UI)
+- **Alternative Docs**: `http://localhost:8000/redoc` (ReDoc)
+- **Authentication**: None (JWT planned for future versions)
 - **Content-Type**: `application/json` for most endpoints
+- **File Upload**: `multipart/form-data` for file endpoints
 - **Rate Limiting**: Not implemented (planned for production)
+
+### 🔧 Technical Stack
+
+#### Backend Architecture
+
+- **FastAPI**: High-performance async web framework
+- **Celery**: Distributed task queue for background processing
+- **Pandas**: Data manipulation and analysis
+- **Scikit-learn**: Machine learning algorithms
+- **Pydantic**: Data validation and serialization
+
+#### Quality Standards
+
+- ✅ **Zero PEP8 violations** across all Python files
+- ✅ **Comprehensive type hints** for better IDE support
+- ✅ **Async/await patterns** for non-blocking operations
+- ✅ **Error handling** with proper exception chaining
 
 ---
 
@@ -22,10 +51,12 @@ Upload a CSV or XLSX file for analysis.
 **Content-Type**: `multipart/form-data`
 
 **Parameters**:
+
 - `file` (required): CSV or XLSX file (max 10MB)
 - `description` (optional): Dataset description
 
 **Request Example**:
+
 ```bash
 curl -X POST \
   http://localhost:8000/api/v1/data/upload \
@@ -35,6 +66,7 @@ curl -X POST \
 ```
 
 **Response Example**:
+
 ```json
 {
   "dataset_id": "550e8400-e29b-41d4-a716-446655440000",
@@ -57,7 +89,8 @@ curl -X POST \
 }
 ```
 
-**Error Responses**:
+## Error Responses
+
 ```json
 // File too large
 {
@@ -91,16 +124,19 @@ Retrieve metadata and preview of an uploaded dataset.
 **Endpoint**: `GET /data/{dataset_id}`
 
 **Parameters**:
+
 - `dataset_id` (path): UUID of the dataset
 - `preview_rows` (query, optional): Number of preview rows (default: 10)
 
 **Request Example**:
+
 ```bash
 curl -X GET \
   "http://localhost:8000/api/v1/data/550e8400-e29b-41d4-a716-446655440000?preview_rows=5"
 ```
 
 **Response Example**:
+
 ```json
 {
   "dataset_id": "550e8400-e29b-41d4-a716-446655440000",
@@ -152,15 +188,18 @@ Remove a dataset and all associated analysis results.
 **Endpoint**: `DELETE /data/{dataset_id}`
 
 **Parameters**:
+
 - `dataset_id` (path): UUID of the dataset
 
 **Request Example**:
+
 ```bash
 curl -X DELETE \
   "http://localhost:8000/api/v1/data/550e8400-e29b-41d4-a716-446655440000"
 ```
 
 **Response Example**:
+
 ```json
 {
   "message": "Dataset deleted successfully",
@@ -182,6 +221,7 @@ Perform comprehensive exploratory data analysis on a dataset.
 **Content-Type**: `application/json`
 
 **Request Body**:
+
 ```json
 {
   "dataset_id": "550e8400-e29b-41d4-a716-446655440000",
@@ -196,6 +236,7 @@ Perform comprehensive exploratory data analysis on a dataset.
 ```
 
 **Request Example**:
+
 ```bash
 curl -X POST \
   http://localhost:8000/api/v1/analysis/eda \
@@ -203,7 +244,8 @@ curl -X POST \
   -d '{
     "dataset_id": "550e8400-e29b-41d4-a716-446655440000",
     "analysis_type": "full",
-    "options": {
+    "options": 
+    {
       "include_visualizations": true,
       "correlation_threshold": 0.5
     }
@@ -211,6 +253,7 @@ curl -X POST \
 ```
 
 **Response Example**:
+
 ```json
 {
   "analysis_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
@@ -334,9 +377,11 @@ Retrieve the results of a previously run analysis.
 **Endpoint**: `GET /analysis/{analysis_id}`
 
 **Parameters**:
+
 - `analysis_id` (path): UUID of the analysis
 
 **Request Example**:
+
 ```bash
 curl -X GET \
   "http://localhost:8000/api/v1/analysis/a1b2c3d4-e5f6-7890-abcd-ef1234567890"
@@ -351,18 +396,21 @@ Get a list of all analyses for a dataset.
 **Endpoint**: `GET /analysis/dataset/{dataset_id}`
 
 **Parameters**:
+
 - `dataset_id` (path): UUID of the dataset
 - `status` (query, optional): Filter by status (pending, running, completed, failed)
 - `limit` (query, optional): Maximum number of results (default: 10)
 - `offset` (query, optional): Number of results to skip (default: 0)
 
 **Request Example**:
+
 ```bash
 curl -X GET \
   "http://localhost:8000/api/v1/analysis/dataset/550e8400-e29b-41d4-a716-446655440000?status=completed&limit=5"
 ```
 
 **Response Example**:
+
 ```json
 {
   "analyses": [
@@ -394,6 +442,7 @@ Train multiple machine learning models on a dataset.
 **Content-Type**: `application/json`
 
 **Request Body**:
+
 ```json
 {
   "dataset_id": "550e8400-e29b-41d4-a716-446655440000",
@@ -425,6 +474,7 @@ Train multiple machine learning models on a dataset.
 ```
 
 **Request Example**:
+
 ```bash
 curl -X POST \
   http://localhost:8000/api/v1/ml/train \
@@ -432,8 +482,12 @@ curl -X POST \
   -d '{
     "dataset_id": "550e8400-e29b-41d4-a716-446655440000",
     "target_column": "salary",
-    "algorithms": ["linear_regression", "random_forest"],
-    "training_config": {
+    "algorithms": [
+      "linear_regression",
+      "random_forest"
+      ],
+    "training_config": 
+    {
       "test_size": 0.2,
       "cv_folds": 5
     }
@@ -441,6 +495,7 @@ curl -X POST \
 ```
 
 **Response Example**:
+
 ```json
 {
   "training_job_id": "ml-job-12345678-90ab-cdef-1234-567890abcdef",
@@ -459,15 +514,18 @@ Retrieve the results of a machine learning training job.
 **Endpoint**: `GET /ml/results/{training_job_id}`
 
 **Parameters**:
+
 - `training_job_id` (path): UUID of the training job
 
 **Request Example**:
+
 ```bash
 curl -X GET \
   "http://localhost:8000/api/v1/ml/results/ml-job-12345678-90ab-cdef-1234-567890abcdef"
 ```
 
 **Response Example**:
+
 ```json
 {
   "training_job_id": "ml-job-12345678-90ab-cdef-1234-567890abcdef",
@@ -560,6 +618,7 @@ Use a trained model to make predictions on new data.
 **Content-Type**: `application/json`
 
 **Request Body**:
+
 ```json
 {
   "model_id": "model-rf-12345",
@@ -579,6 +638,7 @@ Use a trained model to make predictions on new data.
 ```
 
 **Request Example**:
+
 ```bash
 curl -X POST \
   http://localhost:8000/api/v1/ml/predict \
@@ -586,12 +646,17 @@ curl -X POST \
   -d '{
     "model_id": "model-rf-12345",
     "input_data": [
-      {"age": 30, "experience": 5, "performance": 8.5}
+      {
+        "age": 30,
+        "experience": 5,
+        "performance": 8.5
+      }
     ]
   }'
 ```
 
 **Response Example**:
+
 ```json
 {
   "predictions": [
@@ -625,9 +690,11 @@ Retrieve detailed information about a specific trained model.
 **Endpoint**: `GET /ml/models/{model_id}`
 
 **Parameters**:
+
 - `model_id` (path): ID of the model
 
 **Request Example**:
+
 ```bash
 curl -X GET \
   "http://localhost:8000/api/v1/ml/models/model-rf-12345"
@@ -637,7 +704,7 @@ curl -X GET \
 
 ---
 
-## Error Responses
+## Standardized Error Responses
 
 All endpoints use consistent error response format:
 
@@ -675,6 +742,7 @@ All endpoints use consistent error response format:
 ### Example Error Responses
 
 **Validation Error**:
+
 ```json
 {
   "error": {
@@ -691,6 +759,7 @@ All endpoints use consistent error response format:
 ```
 
 **Resource Not Found**:
+
 ```json
 {
   "error": {
@@ -706,6 +775,7 @@ All endpoints use consistent error response format:
 ```
 
 **Processing Error**:
+
 ```json
 {
   "error": {
@@ -754,6 +824,7 @@ Retry-After: 60
 For long-running operations, webhooks will be available:
 
 **Webhook Registration**:
+
 ```json
 POST /webhooks
 {
@@ -764,6 +835,7 @@ POST /webhooks
 ```
 
 **Webhook Payload**:
+
 ```json
 {
   "event": "training.completed",
