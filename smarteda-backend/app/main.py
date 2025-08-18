@@ -13,13 +13,15 @@ Features:
 - Analysis history tracking
 """
 
+import logging
+
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-import logging
 
 from app.settings import get_settings, setup_logging
 from app.database.connection import startup_database, shutdown_database
+from app.database.connection import check_database_health # type: ignore
 from app.routes import eda, ml, files
 
 # Setup logging
@@ -72,7 +74,6 @@ def create_application() -> FastAPI:
         allow_methods=["GET", "POST", "PUT", "DELETE"],
         allow_headers=["*"],
     )
-    
     # Include routers with API prefix
     application.include_router(eda.router, prefix=f"{settings.api_prefix}/eda", tags=["EDA"])
     application.include_router(ml.router, prefix=f"{settings.api_prefix}/ml", tags=["Machine Learning"])
@@ -82,17 +83,13 @@ def create_application() -> FastAPI:
     @application.get("/health")
     async def health_check(): # type: ignore
         """Health check endpoint."""
-        from app.database.connection import check_database_health # type: ignore
-        
-        db_health = await check_database_health() # type: ignore
-        
+        db_health = await check_database_health() # type: ignore        
         return {
             "status": "healthy",
             "version": settings.app_version,
             "environment": settings.environment,
             "database": db_health
         } # type: ignore
-    
     # Root endpoint
     @application.get("/")
     async def root(): # type: ignore
