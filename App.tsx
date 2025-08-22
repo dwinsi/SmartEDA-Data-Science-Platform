@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Toaster, toast } from 'sonner';
 import { HomeSection } from './components/HomeSection';
+import { LearnSection } from './components/LearnSection';
 import FileUpload from './components/FileUpload';
 import EDADashboard from './components/EDADashboard';
 import MLDashboard from './components/MLDashboard';
@@ -18,11 +19,23 @@ interface UploadedDataset {
   created_at: string;
 }
 
-type ViewState = 'home' | 'upload' | 'eda' | 'ml';
+type ViewState = 'home' | 'upload' | 'eda' | 'ml' | 'learn';
 
 function App() {
   const [currentView, setCurrentView] = useState<ViewState>('home');
   const [uploadedDataset, setUploadedDataset] = useState<UploadedDataset | null>(null);
+
+  // Listen for navigation events from HomeSection
+  React.useEffect(() => {
+    const handler = (e: Event) => {
+      const detail = (e as CustomEvent).detail;
+      if (detail === 'ml') {
+        setCurrentView('learn');
+      }
+    };
+    window.addEventListener('navigateView', handler);
+    return () => window.removeEventListener('navigateView', handler);
+  }, []);
 
   const handleFileUploaded = (dataset: UploadedDataset) => {
     setUploadedDataset(dataset);
@@ -43,6 +56,7 @@ function App() {
 
   const handleNavigateUpload = () => {
     setCurrentView('upload');
+    setUploadedDataset(null); // Reset dataset so upload view is clean
   };
 
   const handleLoadDemoDataset = () => {
@@ -109,7 +123,6 @@ function App() {
     switch (currentView) {
       case 'home':
         return <HomeSection />;
-      
       case 'upload':
         return (
           <div className="container mx-auto px-4 py-8">
@@ -120,13 +133,12 @@ function App() {
             />
           </div>
         );
-      
       case 'eda':
         return uploadedDataset ? (
           <div className="container mx-auto px-4 py-8">
             <EDADashboard
               datasetId={uploadedDataset.dataset_id}
-              onClose={() => setCurrentView('upload')}
+              onClose={handleNavigateUpload}
             />
           </div>
         ) : (
@@ -134,13 +146,12 @@ function App() {
             <p className="text-gray-500">No dataset selected</p>
           </div>
         );
-      
       case 'ml':
         return uploadedDataset ? (
           <div className="container mx-auto px-4 py-8">
             <MLDashboard
               datasetId={uploadedDataset.dataset_id}
-              onClose={() => setCurrentView('upload')}
+              onClose={handleNavigateUpload}
             />
           </div>
         ) : (
@@ -148,7 +159,10 @@ function App() {
             <p className="text-gray-500">No dataset selected</p>
           </div>
         );
-      
+      case 'learn':
+        // Pass demoData from window if available
+        const demoData = (window as any).demoData;
+        return <LearnSection demoData={demoData} />;
       default:
         return <HomeSection />;
     }

@@ -66,12 +66,12 @@ def create_application() -> FastAPI:
         lifespan=lifespan
     )
     
-    # Configure CORS
+    # Configure CORS (hardcoded for local dev)
     application.add_middleware(
         CORSMiddleware,
-        allow_origins=settings.allowed_origins,
+        allow_origins=["http://localhost:3000", "http://localhost:5173"],
         allow_credentials=True,
-        allow_methods=["GET", "POST", "PUT", "DELETE"],
+        allow_methods=["*"],
         allow_headers=["*"],
     )
     # Include routers with API prefix

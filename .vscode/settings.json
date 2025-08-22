@@ -3,6 +3,7 @@
         "./Backend/utils"
     ],
     "cSpell.words": [
-        "dotenv"
+        "dotenv",
+        "smarteda"
     ]
 }

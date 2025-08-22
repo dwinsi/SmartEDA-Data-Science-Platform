@@ -89,7 +89,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
         setUploadProgress(prev => Math.min(prev + 10, 90));
       }, 200);
 
-      const response = await fetch('http://localhost:8000/api/files/upload', {
+  const response = await fetch('http://localhost:8000/api/v1/files/upload', {
         method: 'POST',
         body: formData,
       });

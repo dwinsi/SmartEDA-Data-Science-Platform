@@ -1,4 +1,10 @@
 import React, { useState } from "react";
+// Gradient background style using the selected palette
+const gradientBg = {
+  background: 'linear-gradient(135deg, #fcfcfc 0%, #ced6ed 16%, #a1afd3 40%, #808bd0 60%, #5b81d7 80%, #4755a2 100%)',
+  minHeight: '100vh',
+  width: '100%',
+};
 import { CTACard } from "./CTACard";
 import { InteractiveCharts, DemoChartProps } from "./InteractiveCharts";
 import Papa from "papaparse";
@@ -25,37 +31,42 @@ export function HomeSection() {
     });
   };
   const handleExploreML = () => {
-    const evt = new CustomEvent("switchTab", { detail: "ML Models" });
+    // Use a custom event to trigger navigation in App
+    const evt = new CustomEvent("navigateView", { detail: "ml" });
     window.dispatchEvent(evt);
   };
 
   return (
-    <section>
+    <section style={gradientBg}>
       {/* ...existing code... */}
       <div className="text-center mb-16">
-        <h1 className="text-5xl lg:text-6xl font-bold text-gray-900 mb-6 tracking-tight">
+        <h1 className="text-5xl lg:text-6xl font-bold mb-6 tracking-tight text-white drop-shadow-lg">
           Welcome to{' '}
-          <span className="bg-gradient-to-r from-blue-400 to-green-400 bg-clip-text text-transparent">
+          <span className="bg-gradient-to-r from-gradient4 to-gradient6 bg-clip-text text-transparent font-extrabold">
             SmartEDA
           </span>
         </h1>
-        <p className="text-xl lg:text-2xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
+        <p className="text-xl lg:text-2xl max-w-4xl mx-auto leading-relaxed text-gradient6 drop-shadow">
           Upload your dataset and get instant exploratory data analysis with powerful visualizations and machine learning insights.
         </p>
       </div>
-      <div className="flex justify-center gap-8 mb-12">
-        <CTACard
-          title="Try Demo Dataset"
-          description="Explore SmartEDA features instantly with a sample dataset."
-          icon={<span>🧪</span>}
-          onClick={handleDemoDataset}
-        />
-        <CTACard
-          title="Explore ML Models"
-          description="Discover machine learning models and insights for your data."
-          icon={<span>🤖</span>}
-          onClick={handleExploreML}
-        />
+      <div className="flex flex-col md:flex-row justify-center gap-8 mb-12">
+        <div className="transition-transform duration-200 hover:scale-105 hover:shadow-2xl rounded-2xl border border-gradient4 bg-gradient1/80 p-8 shadow-xl">
+          <CTACard
+            title="Try Demo Dataset"
+            description="Explore SmartEDA features instantly with a sample dataset."
+            icon={<span>🧪</span>}
+            onClick={handleDemoDataset}
+          />
+        </div>
+        <div className="transition-transform duration-200 hover:scale-105 hover:shadow-2xl rounded-2xl border border-gradient5 bg-gradient1/80 p-8 shadow-xl">
+          <CTACard
+            title="Explore ML Models"
+            description="Discover machine learning models and insights for your data."
+            icon={<span>🤖</span>}
+            onClick={handleExploreML}
+          />
+        </div>
       </div>
       {/* Show demo charts after clicking CTA */}
       {showDemoCharts && demoData && (

@@ -170,7 +170,7 @@ const EDADashboard: React.FC<EDADashboardProps> = ({ datasetId, onClose }) => {
       }
       
       // Start EDA analysis
-      const response = await fetch(`http://localhost:8000/api/eda/analyze/${datasetId}`, {
+      const response = await fetch(`http://localhost:8000/api/v1/eda/analyze/${datasetId}`, {
         method: 'POST',
       });
 

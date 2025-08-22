@@ -37,7 +37,15 @@ export default {
           800: '#166534',
           900: '#14532d',
         },
-      },
+        },
+        colors: {
+          gradient1: '#f8f4f4',
+          gradient2: '#d5d8d7',
+          gradient3: '#a8a1a1',
+          gradient4: '#208fe5',
+          gradient5: '#0e6937',
+          gradient6: '#0a5536',
+        },
       container: {
         center: true,
         padding: {
