@@ -31,9 +31,8 @@ export function HomeSection() {
     });
   };
   const handleExploreML = () => {
-    // Use a custom event to trigger navigation in App
-    const evt = new CustomEvent("navigateView", { detail: "ml" });
-    window.dispatchEvent(evt);
+    // Navigate to the Learn page
+    window.location.href = '/learn';
   };
 
   return (
@@ -61,9 +60,9 @@ export function HomeSection() {
         </div>
         <div className="transition-transform duration-200 hover:scale-105 hover:shadow-2xl rounded-2xl border border-gradient5 bg-gradient1/80 p-8 shadow-xl">
           <CTACard
-            title="Explore ML Models"
-            description="Discover machine learning models and insights for your data."
-            icon={<span>🤖</span>}
+            title="Learn ML Concepts"
+            description="Explore machine learning concepts with our interactive learning assistant."
+            icon={<span>🎓</span>}
             onClick={handleExploreML}
           />
         </div>

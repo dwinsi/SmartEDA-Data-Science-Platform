@@ -10,7 +10,7 @@ ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-router = APIRouter(prefix="/api/v1/auth", tags=["auth"])
+router = APIRouter(tags=["auth"])
 
 # In-memory user store for demo (replace with DB in production)
 users_db: Dict[str, User] = {}

@@ -159,7 +159,7 @@ class DatabaseManager:
     
     async def create_indexes(self) -> None:
         """Create database indexes for optimal performance."""
-        if not self.database:  # type: ignore
+        if self.database is None:  # type: ignore
             raise RuntimeError("Database not initialized")
 
         try:
@@ -263,9 +263,10 @@ async def check_database_health() -> dict:  # type: ignore
     }
 
     try:
+
         # Check basic connection
         health_status["connection"] = await db_manager.health_check()
-        if health_status["connection"] and db_manager.database:  # type: ignore
+        if health_status["connection"] and db_manager.database is not None:  # type: ignore
             # Check collections
             collections = await db_manager.database.list_collection_names()  # type: ignore
             for collection in collections:  # type: ignore

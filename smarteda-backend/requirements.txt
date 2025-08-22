@@ -6,23 +6,26 @@ matplotlib
 seaborn
 pydantic
 python-multipart
-motor==3.3.2
-pymongo==4.6.0
-beanie==1.24.0
-python-jose[cryptography]==3.3.0
-passlib[bcrypt]==1.7.4
-python-dotenv==1.0.0
-pydantic-settings==2.6.1
+motor
+pymongo
+beanie
+python-jose[cryptography]
+passlib[bcrypt]
+python-dotenv
+pydantic-settings
 pydantic
-pydantic
+pydantic[email]
 
 # Message Queue Dependencies
-celery==5.3.4
-redis==5.0.1
-kombu==5.3.4
+celery
+redis
+kombu
 
 # Vector Database & Embeddings
-faiss-cpu==1.7.4
-sentence-transformers==2.2.2
-numpy==1.24.3
-scikit-learn==1.3.0
+faiss-cpu
+sentence-transformers
+numpy
+scikit-learn
+uvicorn
+email-validator
+

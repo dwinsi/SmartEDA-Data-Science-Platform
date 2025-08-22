@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, Link } from 'react-router-dom';
 import ErrorBoundary from './components/ErrorBoundary';
-import RegisterForm from './components/RegisterForm';
-import LoginForm from './components/LoginForm';
+import AuthCard from './components/AuthCard';
 import { Toaster, toast } from 'sonner';
 import { HomeSection } from './components/HomeSection';
 import { LearnSection } from './components/LearnSection';
+import { MLLearnSection } from './components/MLLearnSection';
 import FileUpload from './components/FileUpload';
 import EDADashboard from './components/EDADashboard';
 import MLDashboard from './components/MLDashboard';
@@ -45,7 +45,12 @@ function App() {
     const interval = setInterval(checkTokenExpiry, 60 * 1000); // check every minute
     return () => clearInterval(interval);
   }, []);
-  const [uploadedDataset, setUploadedDataset] = useState<UploadedDataset | null>(null);
+  // Initialize uploadedDataset from localStorage if available
+  const [uploadedDataset, setUploadedDataset] = useState<UploadedDataset | null>(() => {
+    const saved = localStorage.getItem('uploadedDataset');
+    return saved ? JSON.parse(saved) : null;
+  });
+
   const isAuthenticated = () => !!localStorage.getItem('token');
   const getUserEmail = () => {
     const token = localStorage.getItem('token');
@@ -62,12 +67,9 @@ function App() {
     toast.info('Logged out successfully');
     window.location.href = '/';
   };
-  const handleLoginSuccess = () => {
-    toast.success('Login successful!');
-    window.location.href = uploadedDataset ? '/eda' : '/';
-  };
   const handleFileUploaded = (dataset: UploadedDataset) => {
     setUploadedDataset(dataset);
+    localStorage.setItem('uploadedDataset', JSON.stringify(dataset));
   };
   const handleLoadDemoDataset = () => {
     const generateSyntheticData = () => {
@@ -112,13 +114,16 @@ function App() {
     setTimeout(() => {
       toast.info('💡 Tip: Switch to \"🤖 ML Models\" tab to see pre-trained machine learning results!');
     }, 3000);
-    window.location.href = '/eda';
+    // Navigate to ML tab after EDA
+    setTimeout(() => {
+      window.location.href = '/ml';
+    }, 100);
   };
 
   return (
     <ErrorBoundary>
       <BrowserRouter>
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 px-2 sm:px-4">
+        <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 px-2 sm:px-4">
           <header className="bg-white shadow-sm border-b">
             <div className="container mx-auto px-2 sm:px-4 py-4">
               <div className="flex items-center justify-between">
@@ -128,7 +133,7 @@ function App() {
                   </div>
                   <div>
                     <h1 className="text-xl font-bold text-gray-900">SmartEDA</h1>
-                    {uploadedDataset && (
+                    {uploadedDataset && isAuthenticated() && (
                       <p className="text-xs text-gray-500">
                         Dataset: {uploadedDataset.original_filename} ({uploadedDataset.row_count.toLocaleString()} rows)
                       </p>
@@ -139,58 +144,64 @@ function App() {
                   </div>
                 </div>
                 <nav className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4 items-center">
-                  <Link to="/" className="px-3 py-2 text-sm font-medium rounded-md text-gray-500 hover:text-gray-700" aria-current={window.location.pathname === '/' ? 'page' : undefined}>Home</Link>
-                  <Link to="/upload" className="px-3 py-2 text-sm font-medium rounded-md text-gray-500 hover:text-gray-700" aria-current={window.location.pathname === '/upload' ? 'page' : undefined}>Upload</Link>
-                  {!isAuthenticated() && (
+                  {isAuthenticated() ? (
                     <>
-                      <Link to="/register" className="px-3 py-2 text-sm font-medium rounded-md text-gray-500 hover:text-gray-700" aria-current={window.location.pathname === '/register' ? 'page' : undefined}>Register</Link>
-                      <Link to="/login" className="px-3 py-2 text-sm font-medium rounded-md text-gray-500 hover:text-gray-700" aria-current={window.location.pathname === '/login' ? 'page' : undefined}>Login</Link>
+                      <Link to="/" className="px-3 py-2 text-sm font-medium rounded-md text-gray-500 hover:text-gray-700" aria-current={window.location.pathname === '/' ? 'page' : undefined}>Home</Link>
+                      <Link to="/upload" className="px-3 py-2 text-sm font-medium rounded-md text-gray-500 hover:text-gray-700" aria-current={window.location.pathname === '/upload' ? 'page' : undefined}>Upload</Link>
+                      {uploadedDataset && (
+                        <>
+                          <Link to="/eda" className="px-3 py-2 text-sm font-medium rounded-md text-gray-500 hover:text-gray-700" aria-current={window.location.pathname === '/eda' ? 'page' : undefined}>📊 EDA Report</Link>
+                          <Link to="/ml" className="px-3 py-2 text-sm font-medium rounded-md text-gray-500 hover:text-gray-700" aria-current={window.location.pathname === '/ml' ? 'page' : undefined}>🤖 ML Models</Link>
+                        </>
+                      )}
+                      <button
+                        onClick={handleLogout}
+                        className="px-3 py-2 text-sm font-medium rounded-md bg-red-100 text-red-700 ml-2"
+                        aria-label="Logout"
+                      >
+                        Logout
+                      </button>
+                      <button 
+                        onClick={handleLoadDemoDataset}
+                        className="px-3 py-2 text-sm font-medium rounded-md text-purple-600 hover:text-purple-800 border border-purple-200 hover:bg-purple-50"
+                        aria-label="Load Demo Data"
+                      >
+                        Demo Data
+                      </button>
                     </>
-                  )}
-                  {isAuthenticated() && uploadedDataset && (
-                    <>
-                      <Link to="/eda" className="px-3 py-2 text-sm font-medium rounded-md text-gray-500 hover:text-gray-700" aria-current={window.location.pathname === '/eda' ? 'page' : undefined}>📊 EDA Report</Link>
-                      <Link to="/ml" className="px-3 py-2 text-sm font-medium rounded-md text-gray-500 hover:text-gray-700" aria-current={window.location.pathname === '/ml' ? 'page' : undefined}>🤖 ML Models</Link>
-                    </>
-                  )}
-                  {isAuthenticated() && (
-                    <button
-                      onClick={handleLogout}
-                      className="px-3 py-2 text-sm font-medium rounded-md bg-red-100 text-red-700 ml-2"
-                      aria-label="Logout"
-                    >
-                      Logout
-                    </button>
-                  )}
-                  <button 
-                    onClick={handleLoadDemoDataset}
-                    className="px-3 py-2 text-sm font-medium rounded-md text-purple-600 hover:text-purple-800 border border-purple-200 hover:bg-purple-50"
-                    aria-label="Load Demo Data"
-                  >
-                    Demo Data
-                  </button>
+                  ) : null}
                 </nav>
               </div>
             </div>
           </header>
           <main className="pt-4" role="main">
             <Routes>
-              <Route path="/" element={<HomeSection />} />
-              <Route path="/register" element={<div className="container mx-auto px-4 py-8"><RegisterForm /></div>} />
-              <Route path="/login" element={<div className="container mx-auto px-4 py-8"><LoginForm onLoginSuccess={handleLoginSuccess} /></div>} />
-              <Route path="/upload" element={<FileUpload onFileUploaded={handleFileUploaded} />} />
-              <Route path="/eda" element={isAuthenticated() && uploadedDataset ? (
-                <ErrorBoundary>
-                  <EDADashboard datasetId={uploadedDataset.dataset_id} />
-                </ErrorBoundary>
-              ) : <Navigate to="/login" />} />
-              <Route path="/ml" element={isAuthenticated() && uploadedDataset ? (
-                <ErrorBoundary>
-                  <MLDashboard datasetId={uploadedDataset.dataset_id} onClose={() => window.location.href = '/upload'} />
-                </ErrorBoundary>
-              ) : <Navigate to="/login" />} />
-              <Route path="/learn" element={<LearnSection demoData={(window as any).demoData} />} />
-              <Route path="*" element={<HomeSection />} />
+              {!isAuthenticated() ? (
+                <>
+                  <Route path="/register" element={<div className="container mx-auto px-4 py-8"><AuthCard /></div>} />
+                  <Route path="/login" element={<div className="container mx-auto px-4 py-8"><AuthCard /></div>} />
+                  <Route path="*" element={<Navigate to="/login" />} />
+                </>
+              ) : (
+                <>
+                  <Route path="/" element={<HomeSection />} />
+                  <Route path="/upload" element={<FileUpload onFileUploaded={handleFileUploaded} />} />
+                  <Route path="/eda" element={uploadedDataset ? (
+                    <ErrorBoundary>
+                      <EDADashboard datasetId={uploadedDataset.dataset_id} />
+                    </ErrorBoundary>
+                  ) : <Navigate to="/upload" />} />
+                  <Route path="/ml" element={uploadedDataset ? (
+                    <ErrorBoundary>
+                      <MLDashboard datasetId={uploadedDataset.dataset_id} onClose={() => window.location.href = '/upload'} />
+                    </ErrorBoundary>
+                  ) : <Navigate to="/upload" />} />
+                  <Route path="/learn" element={<MLLearnSection />} />
+                  <Route path="/register" element={<Navigate to="/" />} />
+                  <Route path="/login" element={<Navigate to="/" />} />
+                  <Route path="*" element={<HomeSection />} />
+                </>
+              )}
             </Routes>
           </main>
           <Toaster />
