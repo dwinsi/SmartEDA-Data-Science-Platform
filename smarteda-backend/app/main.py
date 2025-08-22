@@ -23,6 +23,7 @@ from app.settings import get_settings, setup_logging
 from app.database.connection import startup_database, shutdown_database
 from app.database.connection import check_database_health # type: ignore
 from app.routes import eda, ml, files
+from app.routes import auth
 
 # Setup logging
 setup_logging()
@@ -78,6 +79,7 @@ def create_application() -> FastAPI:
     application.include_router(eda.router, prefix=f"{settings.api_prefix}/eda", tags=["EDA"])
     application.include_router(ml.router, prefix=f"{settings.api_prefix}/ml", tags=["Machine Learning"])
     application.include_router(files.router, prefix=f"{settings.api_prefix}/files", tags=["File Management"])
+    application.include_router(auth.router, prefix=f"{settings.api_prefix}/auth", tags=["Authentication"])
     
     # Health check endpoint
     @application.get("/health")

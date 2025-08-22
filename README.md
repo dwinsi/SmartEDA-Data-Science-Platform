@@ -9,10 +9,17 @@ A modern, enterprise-grade data science web application for exploratory data ana
 - 🎨 Clean, professional UI with modern design system
 - 📊 Drag-and-drop file upload for CSV/XLSX files
 - 📈 EDA summary cards with comprehensive dataset insights
-- 🧠 Machine learning model selection and training interface
-- 📱 Fully responsive design for all devices
+- � Machine learning model selection and training interface
+- 📱 Fully responsive and accessible design for all devices
 - ⚡ Built with React, TypeScript, and Tailwind CSS
 - 🔒 Secure file parsing with ExcelJS and PapaParse
+- 🔐 Protected routes for sensitive dashboards (EDA/ML)
+- 🛡️ Session management with auto-logout on JWT expiration
+- 🧑‍🦽 Improved accessibility (ARIA labels, semantic elements)
+- 🧩 Error boundaries for robust error feedback
+- 🧪 Demo Data button for instant synthetic dataset exploration
+
+### Backend Features
 
 ### Backend Features
 
@@ -23,6 +30,8 @@ A modern, enterprise-grade data science web application for exploratory data ana
 - 🔄 Real-time progress tracking
 - 📝 Comprehensive logging and error handling
 - ✅ **PEP8 Compliant** - All code follows Python style guidelines
+- 🔐 JWT authentication for secure sessions
+- 🛡️ Route protection and session expiration logic
 
 ## 🛠️ Technology Stack
 
@@ -32,6 +41,7 @@ A modern, enterprise-grade data science web application for exploratory data ana
 - **Vite** for fast development and building
 - **Tailwind CSS** with shadcn/ui components
 - **ExcelJS** and **PapaParse** for secure file processing
+- **React Router** for scalable navigation and protected routes
 
 ### Backend
 
@@ -48,6 +58,8 @@ This project prioritizes security with modern, actively maintained packages:
 
 - **ExcelJS** instead of SheetJS/xlsx - Actively maintained with better security practices
 - **PapaParse** for CSV parsing - Fast, secure, and reliable
+- **JWT authentication** for stateless, secure sessions
+- **Session expiration** and auto-logout for enhanced security
 - **csv-parse** as additional backup for CSV processing
 
 ### Why we replaced xlsx

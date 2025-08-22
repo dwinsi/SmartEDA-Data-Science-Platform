@@ -159,7 +159,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
   };
 
   return (
-    <div className="w-full max-w-2xl mx-auto space-y-4">
+  <div className="w-full max-w-2xl mx-auto space-y-4 px-2 sm:px-0">
       {/* Upload Area */}
       <Card>
         <CardHeader>
@@ -193,7 +193,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
             {!isUploading ? (
               <div className="space-y-4">
                 <div className="mx-auto w-12 h-12 text-gray-400">
-                  <File className="w-full h-full" />
+                  <File className="w-full h-full" aria-hidden="true" />
                 </div>
                 <div>
                   <p className="text-lg font-medium text-gray-900">
@@ -203,7 +203,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
                     or click to browse
                   </p>
                 </div>
-                <Button onClick={handleButtonClick} variant="outline">
+                <Button onClick={handleButtonClick} variant="outline" aria-label="Choose File">
                   Choose File
                 </Button>
                 <p className="text-xs text-gray-500">
@@ -213,7 +213,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
             ) : (
               <div className="space-y-4">
                 <div className="mx-auto w-12 h-12 text-blue-500">
-                  <Upload className="w-full h-full animate-pulse" />
+                  <Upload className="w-full h-full animate-pulse" aria-hidden="true" />
                 </div>
                 <div>
                   <p className="text-lg font-medium text-gray-900">
@@ -232,8 +232,8 @@ const FileUpload: React.FC<FileUploadProps> = ({
 
       {/* Error Display */}
       {error && (
-        <Alert variant="destructive">
-          <AlertCircle className="h-4 w-4" />
+        <Alert variant="destructive" role="alert">
+          <AlertCircle className="h-4 w-4" aria-hidden="true" />
           <AlertDescription>{error}</AlertDescription>
         </Alert>
       )}
@@ -261,13 +261,14 @@ const FileUpload: React.FC<FileUploadProps> = ({
                 variant="ghost"
                 size="sm"
                 onClick={clearUploadedFile}
+                aria-label="Clear Uploaded File"
               >
-                <X className="h-4 w-4" />
+                <X className="h-4 w-4" aria-hidden="true" />
               </Button>
             </div>
 
             {/* Dataset Info */}
-            <div className="grid grid-cols-2 gap-4 p-4 bg-gray-50 rounded-lg">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 bg-gray-50 rounded-lg">
               <div>
                 <p className="text-sm font-medium text-gray-700">Rows</p>
                 <p className="text-lg font-semibold text-gray-900">

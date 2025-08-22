@@ -1,4 +1,8 @@
-import React, { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { BrowserRouter, Routes, Route, Navigate, Link } from 'react-router-dom';
+import ErrorBoundary from './components/ErrorBoundary';
+import RegisterForm from './components/RegisterForm';
+import LoginForm from './components/LoginForm';
 import { Toaster, toast } from 'sonner';
 import { HomeSection } from './components/HomeSection';
 import { LearnSection } from './components/LearnSection';
@@ -19,60 +23,63 @@ interface UploadedDataset {
   created_at: string;
 }
 
-type ViewState = 'home' | 'upload' | 'eda' | 'ml' | 'learn';
-
 function App() {
-  const [currentView, setCurrentView] = useState<ViewState>('home');
-  const [uploadedDataset, setUploadedDataset] = useState<UploadedDataset | null>(null);
-
-  // Listen for navigation events from HomeSection
-  React.useEffect(() => {
-    const handler = (e: Event) => {
-      const detail = (e as CustomEvent).detail;
-      if (detail === 'ml') {
-        setCurrentView('learn');
-      }
+  // Session management: check token expiration
+  useEffect(() => {
+    const checkTokenExpiry = () => {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+      try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        if (payload.exp) {
+          const expiry = payload.exp * 1000; // JWT exp is in seconds
+          if (Date.now() > expiry) {
+            localStorage.removeItem('token');
+            toast.info('Session expired. Please log in again.');
+            window.location.href = '/login';
+          }
+        }
+      } catch {}
     };
-    window.addEventListener('navigateView', handler);
-    return () => window.removeEventListener('navigateView', handler);
+    checkTokenExpiry();
+    const interval = setInterval(checkTokenExpiry, 60 * 1000); // check every minute
+    return () => clearInterval(interval);
   }, []);
-
+  const [uploadedDataset, setUploadedDataset] = useState<UploadedDataset | null>(null);
+  const isAuthenticated = () => !!localStorage.getItem('token');
+  const getUserEmail = () => {
+    const token = localStorage.getItem('token');
+    if (!token) return null;
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return payload.sub || payload.email || null;
+    } catch {
+      return null;
+    }
+  };
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    toast.info('Logged out successfully');
+    window.location.href = '/';
+  };
+  const handleLoginSuccess = () => {
+    toast.success('Login successful!');
+    window.location.href = uploadedDataset ? '/eda' : '/';
+  };
   const handleFileUploaded = (dataset: UploadedDataset) => {
     setUploadedDataset(dataset);
   };
-
-  const handleStartEDA = () => {
-    setCurrentView('eda');
-  };
-
-  const handleStartML = () => {
-    setCurrentView('ml');
-  };
-
-  const handleNavigateHome = () => {
-    setCurrentView('home');
-    setUploadedDataset(null);
-  };
-
-  const handleNavigateUpload = () => {
-    setCurrentView('upload');
-    setUploadedDataset(null); // Reset dataset so upload view is clean
-  };
-
   const handleLoadDemoDataset = () => {
-    // Generate realistic synthetic dataset
     const generateSyntheticData = () => {
       const employees = [];
       const departments = ['Engineering', 'Sales', 'Marketing', 'HR', 'Finance'];
       const regions = ['North America', 'Europe', 'Asia', 'South America'];
       const categories = ['Junior', 'Mid-level', 'Senior', 'Lead', 'Manager'];
-      
       for (let i = 0; i < 1000; i++) {
-        const age = Math.floor(Math.random() * 40) + 22; // 22-62 years
+        const age = Math.floor(Math.random() * 40) + 22;
         const yearsExperience = Math.min(age - 22, Math.floor(Math.random() * 25));
         const baseSalary = 40000 + (yearsExperience * 3000) + (Math.random() * 20000);
-        const performanceScore = 60 + Math.random() * 40; // 60-100
-        
+        const performanceScore = 60 + Math.random() * 40;
         employees.push({
           id: i + 1,
           age,
@@ -87,10 +94,8 @@ function App() {
       }
       return employees;
     };
-
     const syntheticData = generateSyntheticData();
-    
-    const demoDataset: UploadedDataset = {
+    const demoDataset = {
       dataset_id: 'demo-dataset-123',
       original_filename: 'employee_analysis_demo.csv',
       file_size: 125000,
@@ -101,149 +106,98 @@ function App() {
       categorical_columns: ['department', 'region', 'category'],
       created_at: new Date().toISOString()
     };
-    
     setUploadedDataset(demoDataset);
-    
-    // Store the synthetic data globally for the demo components to use
     (window as any).demoData = syntheticData;
-    
-    // Show notification and navigate to EDA
     toast.success('🎉 Demo dataset generated with 1,000 employee records! Running EDA analysis...');
-    
-    // Navigate to EDA to show the analysis automatically
-    setCurrentView('eda');
-    
-    // After a delay, show additional notification about ML
     setTimeout(() => {
-      toast.info('💡 Tip: Switch to "🤖 ML Models" tab to see pre-trained machine learning results!');
+      toast.info('💡 Tip: Switch to \"🤖 ML Models\" tab to see pre-trained machine learning results!');
     }, 3000);
-  };
-
-  const renderCurrentView = () => {
-    switch (currentView) {
-      case 'home':
-        return <HomeSection />;
-      case 'upload':
-        return (
-          <div className="container mx-auto px-4 py-8">
-            <FileUpload
-              onFileUploaded={handleFileUploaded}
-              onStartEDA={handleStartEDA}
-              onStartML={handleStartML}
-            />
-          </div>
-        );
-      case 'eda':
-        return uploadedDataset ? (
-          <div className="container mx-auto px-4 py-8">
-            <EDADashboard
-              datasetId={uploadedDataset.dataset_id}
-              onClose={handleNavigateUpload}
-            />
-          </div>
-        ) : (
-          <div className="container mx-auto px-4 py-8 text-center">
-            <p className="text-gray-500">No dataset selected</p>
-          </div>
-        );
-      case 'ml':
-        return uploadedDataset ? (
-          <div className="container mx-auto px-4 py-8">
-            <MLDashboard
-              datasetId={uploadedDataset.dataset_id}
-              onClose={handleNavigateUpload}
-            />
-          </div>
-        ) : (
-          <div className="container mx-auto px-4 py-8 text-center">
-            <p className="text-gray-500">No dataset selected</p>
-          </div>
-        );
-      case 'learn':
-        // Pass demoData from window if available
-        const demoData = (window as any).demoData;
-        return <LearnSection demoData={demoData} />;
-      default:
-        return <HomeSection />;
-    }
+    window.location.href = '/eda';
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
-      {/* Simple Header */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-green-400 rounded-lg flex items-center justify-center">
-                <span className="text-white text-sm">📊</span>
-              </div>
-              <div>
-                <h1 className="text-xl font-bold text-gray-900">SmartEDA</h1>
-                {uploadedDataset && (
-                  <p className="text-xs text-gray-500">
-                    Dataset: {uploadedDataset.original_filename} ({uploadedDataset.row_count.toLocaleString()} rows)
-                  </p>
-                )}
+    <ErrorBoundary>
+      <BrowserRouter>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 px-2 sm:px-4">
+          <header className="bg-white shadow-sm border-b">
+            <div className="container mx-auto px-2 sm:px-4 py-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-green-400 rounded-lg flex items-center justify-center">
+                    <span className="text-white text-sm" aria-hidden="true">📊</span>
+                  </div>
+                  <div>
+                    <h1 className="text-xl font-bold text-gray-900">SmartEDA</h1>
+                    {uploadedDataset && (
+                      <p className="text-xs text-gray-500">
+                        Dataset: {uploadedDataset.original_filename} ({uploadedDataset.row_count.toLocaleString()} rows)
+                      </p>
+                    )}
+                    {isAuthenticated() && (
+                      <p className="text-xs text-green-700 mt-1">Logged in as: {getUserEmail()}</p>
+                    )}
+                  </div>
+                </div>
+                <nav className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4 items-center">
+                  <Link to="/" className="px-3 py-2 text-sm font-medium rounded-md text-gray-500 hover:text-gray-700" aria-current={window.location.pathname === '/' ? 'page' : undefined}>Home</Link>
+                  <Link to="/upload" className="px-3 py-2 text-sm font-medium rounded-md text-gray-500 hover:text-gray-700" aria-current={window.location.pathname === '/upload' ? 'page' : undefined}>Upload</Link>
+                  {!isAuthenticated() && (
+                    <>
+                      <Link to="/register" className="px-3 py-2 text-sm font-medium rounded-md text-gray-500 hover:text-gray-700" aria-current={window.location.pathname === '/register' ? 'page' : undefined}>Register</Link>
+                      <Link to="/login" className="px-3 py-2 text-sm font-medium rounded-md text-gray-500 hover:text-gray-700" aria-current={window.location.pathname === '/login' ? 'page' : undefined}>Login</Link>
+                    </>
+                  )}
+                  {isAuthenticated() && uploadedDataset && (
+                    <>
+                      <Link to="/eda" className="px-3 py-2 text-sm font-medium rounded-md text-gray-500 hover:text-gray-700" aria-current={window.location.pathname === '/eda' ? 'page' : undefined}>📊 EDA Report</Link>
+                      <Link to="/ml" className="px-3 py-2 text-sm font-medium rounded-md text-gray-500 hover:text-gray-700" aria-current={window.location.pathname === '/ml' ? 'page' : undefined}>🤖 ML Models</Link>
+                    </>
+                  )}
+                  {isAuthenticated() && (
+                    <button
+                      onClick={handleLogout}
+                      className="px-3 py-2 text-sm font-medium rounded-md bg-red-100 text-red-700 ml-2"
+                      aria-label="Logout"
+                    >
+                      Logout
+                    </button>
+                  )}
+                  <button 
+                    onClick={handleLoadDemoDataset}
+                    className="px-3 py-2 text-sm font-medium rounded-md text-purple-600 hover:text-purple-800 border border-purple-200 hover:bg-purple-50"
+                    aria-label="Load Demo Data"
+                  >
+                    Demo Data
+                  </button>
+                </nav>
               </div>
             </div>
-            <nav className="flex space-x-4">
-              <button 
-                onClick={handleNavigateHome}
-                className={`px-3 py-2 text-sm font-medium rounded-md ${
-                  currentView === 'home' ? 'bg-blue-100 text-blue-700' : 'text-gray-500 hover:text-gray-700'
-                }`}
-              >
-                Home
-              </button>
-              <button 
-                onClick={handleNavigateUpload}
-                className={`px-3 py-2 text-sm font-medium rounded-md ${
-                  currentView === 'upload' ? 'bg-blue-100 text-blue-700' : 'text-gray-500 hover:text-gray-700'
-                }`}
-              >
-                Upload
-              </button>
-              
-              {/* Show EDA and ML tabs only when dataset is loaded */}
-              {uploadedDataset && (
-                <>
-                  <button 
-                    onClick={handleStartEDA}
-                    className={`px-3 py-2 text-sm font-medium rounded-md ${
-                      currentView === 'eda' ? 'bg-green-100 text-green-700' : 'text-gray-500 hover:text-gray-700'
-                    }`}
-                  >
-                    📊 EDA Report
-                  </button>
-                  <button 
-                    onClick={handleStartML}
-                    className={`px-3 py-2 text-sm font-medium rounded-md ${
-                      currentView === 'ml' ? 'bg-purple-100 text-purple-700' : 'text-gray-500 hover:text-gray-700'
-                    }`}
-                  >
-                    🤖 ML Models
-                  </button>
-                </>
-              )}
-              
-              <button 
-                onClick={handleLoadDemoDataset}
-                className="px-3 py-2 text-sm font-medium rounded-md text-purple-600 hover:text-purple-800 border border-purple-200 hover:bg-purple-50"
-              >
-                Demo Data
-              </button>
-            </nav>
-          </div>
+          </header>
+          <main className="pt-4" role="main">
+            <Routes>
+              <Route path="/" element={<HomeSection />} />
+              <Route path="/register" element={<div className="container mx-auto px-4 py-8"><RegisterForm /></div>} />
+              <Route path="/login" element={<div className="container mx-auto px-4 py-8"><LoginForm onLoginSuccess={handleLoginSuccess} /></div>} />
+              <Route path="/upload" element={<FileUpload onFileUploaded={handleFileUploaded} />} />
+              <Route path="/eda" element={isAuthenticated() && uploadedDataset ? (
+                <ErrorBoundary>
+                  <EDADashboard datasetId={uploadedDataset.dataset_id} />
+                </ErrorBoundary>
+              ) : <Navigate to="/login" />} />
+              <Route path="/ml" element={isAuthenticated() && uploadedDataset ? (
+                <ErrorBoundary>
+                  <MLDashboard datasetId={uploadedDataset.dataset_id} onClose={() => window.location.href = '/upload'} />
+                </ErrorBoundary>
+              ) : <Navigate to="/login" />} />
+              <Route path="/learn" element={<LearnSection demoData={(window as any).demoData} />} />
+              <Route path="*" element={<HomeSection />} />
+            </Routes>
+          </main>
+          <Toaster />
         </div>
-      </header>
-      <main className="pt-4">
-        {renderCurrentView()}
-      </main>
-      <Toaster />
-    </div>
+      </BrowserRouter>
+    </ErrorBoundary>
   );
 }
 
 export default App;
-

@@ -11,6 +11,11 @@ A comprehensive, scalable web application for automated Exploratory Data Analysi
 - **ML Pipeline**: Multi-algorithm training with classification and regression support
 - **Interactive Visualizations**: Heatmaps, distributions, box plots, and more
 - **Results Dashboard**: Comprehensive analytics with downloadable reports
+- **Session Management**: JWT-based authentication, auto-logout on token expiration
+- **Protected Routes**: EDA/ML dashboards require authentication and dataset
+- **Error Boundaries**: Robust error feedback for global and dashboard components
+- **Demo Data Button**: Instantly loads synthetic dataset for EDA/ML exploration
+- **Accessibility & Responsiveness**: ARIA labels, semantic elements, mobile-friendly UI
 
 ### Technical Features
 
@@ -32,22 +37,42 @@ A comprehensive, scalable web application for automated Exploratory Data Analysi
 - **Matplotlib/Seaborn**: Data visualization
 - **Pydantic**: Data validation and settings management
 
-### Frontend
+---
 
-- **React 18**: Modern UI library with hooks
-- **TypeScript**: Type-safe JavaScript
-- **Vite**: Fast build tool and dev server
-- **Tailwind CSS**: Utility-first CSS framework
-- **shadcn/ui**: Beautiful, accessible component library
-- **Lucide React**: Modern icon library
+## 🔑 JWT & Session Management Basics
 
-### Data Science Stack
+**JWT (JSON Web Token)** is a compact, URL-safe token format used for securely transmitting information between parties as a JSON object. It is commonly used for authentication and authorization in web applications.
 
-- **NumPy**: Numerical computing
-- **Pandas**: Data analysis and manipulation
-- **Scikit-learn**: Machine learning library
-- **Matplotlib**: Plotting library
-- **Seaborn**: Statistical data visualization
+**Structure:**
+
+- Header: Specifies token type and signing algorithm.
+- Payload: Contains claims (user info, permissions, expiration).
+- Signature: Verifies token integrity using a secret key.
+
+**How JWT Works:**
+
+- Backend generates a JWT on login and sends it to the client.
+- Client stores the token (usually in localStorage).
+- Protected requests include the token in the Authorization header.
+- Backend verifies the token and grants access if valid.
+
+**Example (Python FastAPI):**
+
+```python
+import jwt, datetime
+SECRET_KEY = "your_secret"
+def create_token(user_id):
+   payload = {
+      "sub": user_id,
+      "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=1)
+   }
+   return jwt.encode(payload, SECRET_KEY, algorithm="HS256")
+```
+
+**Session Management:**
+Session management is the process of securely handling user authentication state across requests. With JWT, sessions are stateless—the token itself contains all session info. The frontend checks the token's expiration and logs out the user when expired (auto-logout). This improves scalability and security.
+
+---
 
 ## 📁 Project Structure
 
